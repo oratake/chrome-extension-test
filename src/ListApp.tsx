@@ -25,33 +25,33 @@ const ListApp: React.FC = () => {
   const [filteredCompany, setFilteredCompany] = useState(companyList);
 
   useEffect(() => {
-  if (keyword === "") {
-    setFilteredCompany(companyList);
-    return;
-  }
+    if (keyword === "") {
+      setFilteredCompany(companyList);
+      return;
+    }
 
-  const searchKeywords = keyword;
-  //   .trim()
-  //   .toLowerCase()
-  //   .match(/[^\s]+/g);
+    const searchKeywords = keyword;
+    //   .trim()
+    //   .toLowerCase()
+    //   .match(/[^\s]+/g);
 
-  //入力されたキーワードが空白のみの場合
-  if (searchKeywords === null) {
-    setFilteredCompany(companyList);
-    return;
-  }
+    //入力されたキーワードが空白のみの場合
+    if (searchKeywords === null) {
+      setFilteredCompany(companyList);
+      return;
+    }
 
-  const result = companyList.filter((company) => {
-    const keywordRegexp = new RegExp(searchKeywords);
-    return (
-      keywordRegexp.test(String(company.id)) ||
-      keywordRegexp.test(company.companyName) ||
-      keywordRegexp.test(company.companyNameKana)
-    );
-  });
+    const result = companyList.filter((company) => {
+      const keywordRegexp = new RegExp(searchKeywords);
+      return (
+        keywordRegexp.test(String(company.id)) ||
+        keywordRegexp.test(company.companyName) ||
+        keywordRegexp.test(company.companyNameKana)
+      );
+    });
 
-  setFilteredCompany(result);
-}, [keyword]);
+    setFilteredCompany(result);
+  }, [keyword]);
 
   const handleChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
