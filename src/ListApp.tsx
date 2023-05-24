@@ -1,5 +1,11 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 
+interface CompanyList {
+  id: number;
+  companyName: string;
+  companyNameKana: string;
+}
+
 // 仮値
 const companyList = [
   {
@@ -19,38 +25,23 @@ const companyList = [
   },
 ];
 
+const filteredCompanyListWithWord = (companyList: CompanyList[], searchKeywords: string) => {
+  return companyList.filter((company) => {
+    const keywordRegexp = new RegExp(searchKeywords);
+    return (
+      keywordRegexp.test(String(company.id)) ||
+      keywordRegexp.test(company.companyName) ||
+      keywordRegexp.test(company.companyNameKana)
+    );
+  });
+};
+
 const ListApp: React.FC = () => {
   const [keyword, setKeyword] = useState("");
-  // const [showLists, setShowLists] = useState(false);
-  const [filteredCompany, setFilteredCompany] = useState(companyList);
+  const [filteredCompany, setFilteredCompany] = useState([] as CompanyList[]);
 
   useEffect(() => {
-    if (keyword === "") {
-      setFilteredCompany(companyList);
-      return;
-    }
-
-    const searchKeywords = keyword;
-    //   .trim()
-    //   .toLowerCase()
-    //   .match(/[^\s]+/g);
-
-    //入力されたキーワードが空白のみの場合
-    if (searchKeywords === null) {
-      setFilteredCompany(companyList);
-      return;
-    }
-
-    const result = companyList.filter((company) => {
-      const keywordRegexp = new RegExp(searchKeywords);
-      return (
-        keywordRegexp.test(String(company.id)) ||
-        keywordRegexp.test(company.companyName) ||
-        keywordRegexp.test(company.companyNameKana)
-      );
-    });
-
-    setFilteredCompany(result);
+    setFilteredCompany(filteredCompanyListWithWord(companyList, keyword));
   }, [keyword]);
 
   const handleChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
