@@ -39,36 +39,43 @@ const filteredCompanyListWithWord = (companyList: CompanyList[], searchKeywords:
 
 const ListApp = () => {
   const [keyword, setKeyword] = useState("");
+  const [companyList, setCompanyList] = useState([] as CompanyList[]);
   const [filteredCompany, setFilteredCompany] = useState([] as CompanyList[]);
 
   const [companyId, setCompanyId] = useState(0);
   const [companyName, setCompanyName] = useState('');
   const [companyNameKana, setCompanyNameKana] = useState('');
 
-  // 会社リストをfetch
-  const companyListBucket = getBucket("company-list-bucket");
-  async () => {
-    const temp = await companyListBucket.get();
-    setFilteredCompany(temp["company-list-bucket"]);
-  }
+  useEffect(() => {
+    const fetchCompanyList = async () => {
+      const companyListBucket = getBucket("company-list-bucket");
+      const temp = await companyListBucket.get();
+      setCompanyList(temp["company-list-bucket"] || []);
+      setFilteredCompany(temp["company-list-bucket"] || []);
+    }
+    fetchCompanyList();
+  }, []);
 
   useEffect(() => {
-    setFilteredCompany(filteredCompanyListWithWord(filteredCompany, keyword));
-  }, [keyword, filteredCompany]);
+    setFilteredCompany(filteredCompanyListWithWord(companyList, keyword));
+  }, [keyword, companyList]);
 
   const handleChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
   }
 
   const handleAddCompanyData = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault;
-    const tempArray = [...filteredCompany];
+    e.preventDefault();
+
+    const tempArray = [...companyList];
     tempArray.push({
       "id": companyId,
       "companyName": companyName,
       "companyNameKana": companyNameKana,
     });
-    setFilteredCompany(tempArray);
+    setCompanyList(tempArray);
+
+    const companyListBucket = getBucket("company-list-bucket");
     companyListBucket.set(tempArray);
 
     setCompanyId(0);
