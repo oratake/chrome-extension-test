@@ -9,8 +9,19 @@ const manifest = defineManifest({
   action: {
     default_popup: "index.html",
   },
+  commands: {
+    openNewWindow: {
+      suggested_key: {
+        default: "Ctrl+Alt+H",
+        mac: "Command+Option+H",
+      },
+      description: "Run extension with new window",
+      global: true,
+    }
+  },
   permissions: [
     "storage",
+    "tabs",
   ],
 });
 
