@@ -1,30 +1,10 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { getBucket } from "@extend-chrome/storage";
 
 interface CompanyList {
   id: number;
   companyName: string;
   companyNameKana: string;
 }
-
-// // 仮値
-// const testCompanyList = [
-//   {
-//     "id": 2403,
-//     "companyName": "PDCA",
-//     "companyNameKana": "ﾋﾟｰﾃﾞｨｰｼｰｴｰ",
-//   },
-//   {
-//     "id": 1218,
-//     "companyName": "ﾊﾟｯﾁｬｲﾔｯﾊﾟﾙ･ﾌﾟﾚｼｼﾞｮﾝ",
-//     "companyNameKana": "ﾊﾟｯﾁｬｲﾔｯﾊﾟﾙ･ﾌﾟﾚｼｼﾞｮﾝ",
-//   },
-//   {
-//     "id": 6102,
-//     "companyName": "御厨非鉄",
-//     "companyNameKana": "ﾐｸﾘﾔﾋﾃﾂ",
-//   },
-// ];
 
 const filteredCompanyListWithWord = (companyList: CompanyList[], searchKeywords: string) => {
   return companyList.filter((company) => {
@@ -47,11 +27,12 @@ const ListApp = () => {
   const [companyNameKana, setCompanyNameKana] = useState('');
 
   useEffect(() => {
-    const fetchCompanyList = async () => {
-      const companyListBucket = getBucket("company-list-bucket");
-      const temp = await companyListBucket.get();
-      setCompanyList(temp["company-list-bucket"] || []);
-      setFilteredCompany(temp["company-list-bucket"] || []);
+    const fetchCompanyList = () => {
+      chrome.storage.local.get("company-list", (result) => {
+        const storedCompoanyList = result["company-list"] || [];
+        setCompanyList(storedCompoanyList);
+        setFilteredCompany(storedCompoanyList);
+      });
     }
     fetchCompanyList();
   }, []);
@@ -73,14 +54,15 @@ const ListApp = () => {
       "companyName": companyName,
       "companyNameKana": companyNameKana,
     });
-    setCompanyList(tempArray);
 
-    const companyListBucket = getBucket("company-list-bucket");
-    companyListBucket.set(tempArray);
+    chrome.storage.local.set({ "company-list": tempArray }, () => {
+      setCompanyList(tempArray);
+      setCompanyId(0);
+      setCompanyName("");
+      setCompanyNameKana("");
+    });
 
-    setCompanyId(0);
-    setCompanyName("");
-    setCompanyNameKana("");
+    console.log('handleAddCompanyData', chrome.storage.local.get('company-list'));
   };
 
   return (
@@ -91,7 +73,7 @@ const ListApp = () => {
         <input type="text" name="companyNameKana" value={companyNameKana} onChange={(e) => setCompanyNameKana(e.target.value)} placeholder="ｶｲｼｬﾒｲ(ｶﾅ)" />
         <input type="submit" value="追加" />
       </form>
-      <input onChange={handleChangeKeyword} value={keyword} placeholder="🔍検索" />
+      <input onChange={handleChangeKeyword} value={keyword} placeholder="🔍検索" autoFocus />
       {filteredCompany.length !== 0 &&
         <table>
           <thead>
