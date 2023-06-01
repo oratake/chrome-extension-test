@@ -10,10 +10,10 @@ const manifest = defineManifest({
     default_popup: "index.html",
   },
   commands: {
-    openNewWindow: {
+    _execute_action: {
       suggested_key: {
-        default: "Ctrl+Alt+H",
-        mac: "Command+Option+H",
+        default: "Alt+Shift+H",
+        mac: "Alt+Shift+H",
       },
       description: "Run extension with new window",
       global: true,
