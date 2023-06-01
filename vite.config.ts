@@ -9,6 +9,20 @@ const manifest = defineManifest({
   action: {
     default_popup: "index.html",
   },
+  commands: {
+    _execute_action: {
+      suggested_key: {
+        default: "Alt+Shift+H",
+        mac: "Alt+Shift+H",
+      },
+      description: "Run extension with new window",
+      global: true,
+    }
+  },
+  permissions: [
+    "storage",
+    "tabs",
+  ],
 });
 
 // https://vitejs.dev/config/
